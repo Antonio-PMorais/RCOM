@@ -39,12 +39,13 @@ int llOpenTx(LinkLayer llParameters)
     unsigned char receiveByte;
 
     sendFrame[0] = FLAG; // Start flag
-    sendFrame[1] = 0x0303; // Control field 
+    sendFrame[1] = 0x03; // Control field 
+    sendFrame[1] = 0x03; // SET 
     sendFrame[3] = sendFrame[1] ^ sendFrame[2]; // BCC field
     sendFrame[4] = FLAG; // Control field
 
     writeBytesSerialPort(sendFrame, 5);
-    microsecondsleep(100); 
+    sleep(1); 
     for (int i = 0; i < 5; i++) {
         readByteSerialPort(&receiveByte);
         receiveFrame[i] = receiveByte;
@@ -131,6 +132,16 @@ int llOpenRx(LinkLayer llParameters)
 
         }
     }
+
+    unsigned char sendFrame[5] = {0};
+
+    sendFrame[0] = FLAG; // Start flag
+    sendFrame[1] = 0x01; // Control field 
+    sendFrame[1] = 0x07; // SET 
+    sendFrame[3] = sendFrame[1] ^ sendFrame[2]; // BCC field
+    sendFrame[4] = FLAG; // Control field
+
+    writeBytesSerialPort(sendFrame, 5);
 
     // Read from serial port until the 'z' char is received.
 
