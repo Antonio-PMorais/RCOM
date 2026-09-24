@@ -40,7 +40,7 @@ int llOpenTx(LinkLayer llParameters)
 
     sendFrame[0] = FLAG; // Start flag
     sendFrame[1] = 0x03; // Control field 
-    sendFrame[1] = 0x03; // SET 
+    sendFrame[2] = 0x03; // SET 
     sendFrame[3] = sendFrame[1] ^ sendFrame[2]; // BCC field
     sendFrame[4] = FLAG; // Control field
 
@@ -113,31 +113,35 @@ int llOpenRx(LinkLayer llParameters)
         int bytes = readByteSerialPort(&byte);
         nBytesBuf += bytes;
 
-        printf("Byte received: %c\n", byte);
+        printf("var = 0x%02X\n", byte);
         receiveFrame[nBytesBuf - 1] = byte;
 
-        if (receiveFrame[0] == FLAG && receiveFrame[1] == 0x03 && receiveFrame[2] == 0x03 && receiveFrame[3] == 0x00 && receiveFrame[4] == FLAG)
-        {
-            printf("Frame is correct\n");
+        if (nBytesBuf == 5) {
             FRAMED = TRUE;
         }
-        else
-        {
-            printf("Frame is incorrect\n");
-            if (closeSerialPort() < 0)
-                {
-                    perror("closeSerialPort");
-                    return -1;
-                }
+    }
 
-        }
+    if (receiveFrame[0] == FLAG && receiveFrame[1] == 0x03 && receiveFrame[2] == 0x03 && receiveFrame[3] == 0x00 && receiveFrame[4] == FLAG)
+    {
+        printf("Frame is correct\n");
+        FRAMED = TRUE;
+    }
+    else
+    {
+        printf("Frame is incorrect\n");
+        if (closeSerialPort() < 0)
+            {
+                perror("closeSerialPort");
+                return -1;
+            }
+
     }
 
     unsigned char sendFrame[5] = {0};
 
     sendFrame[0] = FLAG; // Start flag
     sendFrame[1] = 0x01; // Control field 
-    sendFrame[1] = 0x07; // SET 
+    sendFrame[2] = 0x07; // SET 
     sendFrame[3] = sendFrame[1] ^ sendFrame[2]; // BCC field
     sendFrame[4] = FLAG; // Control field
 
